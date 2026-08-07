@@ -3,13 +3,14 @@ a program that takes a midi and plays it using the youtube trumpet or other inst
 all credit for the videos goes to the channel https://www.youtube.com/@PlayWithKeyboard
 
 requirements
-1.vscode(for now)
+a system running windows 11/10
+vs code for now
 
 install.
 1.run the .bat then do what it says
 
 
-use.run the many yt trumpet file
+use.run gui script
 
 wip
-(gui,more instruments,fixing the drums) 
+(more instruments,fixing the drums) 
