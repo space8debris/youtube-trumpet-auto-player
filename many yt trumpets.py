@@ -9,28 +9,64 @@ import math
 
 home = Path.home()
 
-instruments_dir = home / "Documents" / "code_things" / "insterments"
+instruments_dir = home / "Documents" / "YT_trumpet" / "insterments"
+folder = home / "Documents" / "YT_trumpet" / "songs"
+
+
+text_songs = []
+for item in folder.iterdir():
+    
+    if item.is_file() and item.suffix == '.txt' and 'mpv_log' not in item.name:
+        text_songs.append(item.name)
+
+print('\n'.join(f"{idx}. {song}" for idx, song in enumerate(text_songs, 1)))
+
+song_selection_num = int(input("Select track number to play: "))
+chosen_text_file = text_songs[song_selection_num - 1]
+
+target_path = folder.joinpath(chosen_text_file)
+string = target_path.read_text()
+
+min_voices_per = {"T": 0, "D": 0, "P": 0}
+song_data = string
+
+
+if "Max Voices:" in string:
+    lines = [line.strip() for line in string.splitlines() if line.strip()]
+    header_line = lines[0]
+    song_data = "\n".join(lines[1:])
+    
+    header = header_line.replace("Max Voices:", "").replace(",", " ").strip()
+    
+    for token in header.split():
+        if len(token) >= 2:
+            inst_letter = token[0].upper()
+            max_voice_num = token[1:]
+            
+            if inst_letter in min_voices_per and max_voice_num.isdigit():
+                  min_voices_per[inst_letter] = int(max_voice_num)
+
 
 instruments = {
     "T": {
         "url": str(instruments_dir / "trumpet_fast.mp4"),
         "midi_note": 60,          
         "seek_start": 15.2,            
-        "voices": ["T1", "T2", "T3", "T4", "T5", "T6"],  
+        "voices": [f"T{i}" for i in range(1, min_voices_per["T"] + 1)],
         "voice_index": 0               
     },
     "D": {
         "url": str(instruments_dir / "drum_fast.mp4"),
         "midi_note": 60,          
         "seek_start": 15.0,            
-        "voices": ["D1", "D2", "D3","D4","D5","D6"],    
+        "voices": [f"D{i}" for i in range(1, min_voices_per["D"] + 1)],    
         "voice_index": 0
     },
     "P": {
         "url": str(instruments_dir / "piano_fast.mp4"),
         "midi_note": 60,          
         "seek_start": 15.0,            
-        "voices": ["P1", "P2", "P3", "P4", "P5", "P6"],  
+        "voices": [f"P{i}" for i in range(1, min_voices_per["P"] + 1)],  
         "voice_index": 0
     },
 }
@@ -42,6 +78,9 @@ for letter in instruments:
 wfl = {pipe_name: i for i, pipe_name in enumerate(all_pipes)}
 
 screen_w, screen_h = pyautogui.size()
+
+windows = len(all_pipes)
+needed = max(1, min(6, windows)) 
 
 grid_w = screen_w// 6
 grid_h = screen_h// 3
@@ -101,25 +140,7 @@ def spliter(token):
         raise ValueError(f"Bad entry: {token}")
     return float(m.group("time")), m.group("letter"), m.group("voice"), m.group("note")
 
-
-folder = home / "Documents" / "code_things" / "songs"
-
-text_songs = []
-for item in folder.iterdir():
-    
-    if item.is_file() and item.suffix == '.txt' and 'mpv_log' not in item.name:
-        text_songs.append(item.name)
-
-print('\n'.join(f"{idx}. {song}" for idx, song in enumerate(text_songs, 1)))
-
-song_selection_num = int(input("Select track number to play: "))
-chosen_text_file = text_songs[song_selection_num - 1]
-
-target_timeline_path = folder.joinpath(chosen_text_file)
-string = target_timeline_path.read_text()
-
-
-split = string.split()
+split = song_data.split()
 play = [spliter(t) for t in split]
 play.sort(key=lambda e: e[0])
 print(play)
@@ -167,14 +188,13 @@ while ct <= end_time:
                 pitch_multiplier = 2 ** (semitone_offset / 12)
                 #honesly no clue how this eqation works but it dose i found i on wikipida 
                 try:
-                    
                     conntrol.command("set_property", "pitch", pitch_multiplier)
-                    
-            
                     conntrol.command("seek", inst_data["seek_start"], "absolute+keyframes")
+                except:
+                    pass
                     
-                except Exception as e:
-                 print(f"It failed i think the stack overflow page said to add this{picked_pipe} at t={event_time}: {e}")
-
+      
     
     time.sleep(0.001)
+    #let me just
+    #make it a nice 200 lines
