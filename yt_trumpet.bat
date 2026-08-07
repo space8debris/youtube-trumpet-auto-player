@@ -44,6 +44,7 @@ py -m pip install --upgrade pip
 py -m pip install pyautogui
 py -m pip install mpv
 py -m pip install python_mpv_jsonipc
+py -m pip install PySimpleGUI
 
 start "" "https://sourceforge.net/projects/mpv-player-windows/files/64bit-v3/"
 

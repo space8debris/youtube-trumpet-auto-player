@@ -5,7 +5,16 @@ import pyautogui
 from collections import defaultdict
 from python_mpv_jsonipc import MPV
 from pathlib import Path  
-import math
+from pathlib import Path
+from mido import MidiFile
+import sys
+
+ask = input("would you like to convert a midi Y/N: ")
+if ask == 'Y':
+    subprocess.run(
+        [sys.executable, "midi maker.py"],
+        cwd=r"C:\Users\dakoda\Documents\YT_trumpet"
+    )
 
 home = Path.home()
 
@@ -210,4 +219,4 @@ while ct <= end_time:
 
     time.sleep(0.001)
     #let me just
-    #make it a nice 200 lines
+    #make it a nice 222 lines
