@@ -9,4 +9,7 @@ install.
 1.run the .bat then do what it says
 
 
-use.
+use.run the many yt trumpet file
+
+wip
+(gui,more instruments,fixing the drums) 
