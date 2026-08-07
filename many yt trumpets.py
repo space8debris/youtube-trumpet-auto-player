@@ -15,27 +15,23 @@ instruments_dir = home / "Documents" / "YT_trumpet" / "insterments"
 folder = home / "Documents" / "YT_trumpet" / "songs"
 root = home / "Documents" / "YT_trumpet"
 
-ask = input("would you like to convert a midi Y/N: ")
-if ask == 'Y':
-    subprocess.run(
-        [sys.executable, "midi maker.py"],
-        cwd=root
-    )
 
 
+if len(sys.argv) > 1:
+    target_path = Path(sys.argv[1])
+else:
+    text_songs = []
+    for item in folder.iterdir():
+        if item.is_file() and item.suffix == '.txt' and 'mpv_log' not in item.name:
+            text_songs.append(item.name)
 
-text_songs = []
-for item in folder.iterdir():
-    
-    if item.is_file() and item.suffix == '.txt' and 'mpv_log' not in item.name:
-        text_songs.append(item.name)
+    print('\n'.join(f"{idx}. {song}" for idx, song in enumerate(text_songs, 1)))
 
-print('\n'.join(f"{idx}. {song}" for idx, song in enumerate(text_songs, 1)))
+    song_selection_num = int(input("Select track number to play: "))
+    chosen_text_file = text_songs[song_selection_num - 1]
 
-song_selection_num = int(input("Select track number to play: "))
-chosen_text_file = text_songs[song_selection_num - 1]
+    target_path = folder.joinpath(chosen_text_file)
 
-target_path = folder.joinpath(chosen_text_file)
 string = target_path.read_text()
 
 min_voices_per = {"T": 0, "D": 0, "P": 0, "G": 0}
@@ -171,7 +167,6 @@ for ev in play:
  rounded_event_time = round(ev[0], 2)
  thing[rounded_event_time].append(ev)
 
-input("space to start")
 
 for conntrol in conntrols:
     try:
