@@ -11,9 +11,9 @@ cd /d "%song_DIR%"
 
 curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/drum_fast.mp4" -o "drum_fast.mp4"
 curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/piano_fast.mp4" -o "piano_fast.mp4"
-curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/trumpet_fast.mp4" -o "drum_fast.mp4"
+curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/trumpet_fast.mp4" -o "Trumpet_fast.mp4"
 
-set "song_DIR=%USERPROFILE%\Documents\YT_trumpet"
+set "file_DIR=%USERPROFILE%\Documents\YT_trumpet"
 
 curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/many%20yt%20trumpets.py" -o "many yt trumpets.py"
 curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/midi%20thing%20hopfly.py" -o "midi thing hopfly.py"
