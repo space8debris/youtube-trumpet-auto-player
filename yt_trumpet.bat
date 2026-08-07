@@ -26,7 +26,9 @@ set "file_DIR=%DOCS_PATH%\YT_trumpet"
 cd /d "%file_DIR%"
 
 curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/many%20yt%20trumpets.py" -o "many yt trumpets.py"
-curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/midi%20thing%20hopfly.py" -o "midi maker.py"
+curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/midi%20maker.py" -o "midi maker.py"
+curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/blob/main/logo/Big_Logo.png?raw=true" -o "Big_Logo.png"
+curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/blob/main/logo/Logo.png?raw=true" -o "Logo.png"
 
 
 py -3.13 --version >nul 2>&1
