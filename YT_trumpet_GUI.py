@@ -98,7 +98,6 @@ while True:
                                 assignments.append(track_values[f"-TRACK-{i}-"])
 
                             break
-                    track_window.close()
 
                     midi_name = sg.popup_get_text('Song name?')
                     print(midi_path)
@@ -107,6 +106,7 @@ while True:
                     #convert code go here
                     break
         
+        track_window.close()
         midi_window.close()
 
     if event == "Play song":
