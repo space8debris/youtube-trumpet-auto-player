@@ -1,7 +1,12 @@
 from pathlib import Path
 from mido import MidiFile
 
-folder_path = Path('C:/Users/dakoda/Documents/code_things/midis')
+home = Path.home()
+
+midi_dir = home / "Documents" / "YT_trumpet" / "midis"
+song_dir = home / "Documents" / "YT_trumpet" / "songs"
+
+folder_path = (midi_dir)
 
 file_list = []
 midi_list = []
@@ -78,26 +83,25 @@ for msg in mid:
           continue
 
     if 'note' in msg_dict:
-        msg_dict['note'] = msg_dict['note']
-        msg_dict['voice'] = 1
+        active_voices = set()
         for past_item in reversed(midi_list):
-            if 'channel' in past_item and 'channel' in msg_dict and past_item['channel'] == msg_dict['channel']:
+            if past_item.get('channel') == msg_dict['channel']:
                 time_gap = msg_dict['time'] - past_item['time']
+
+                if time_gap > 0.3:
+                 break
                 
-                if time_gap <= 0.3:
-                    if past_item.get('voice') == 1:
-                        msg_dict['voice'] = 2
-                    elif past_item.get('voice') == 2:
-                        msg_dict['voice'] = 3
-                    elif past_item.get('voice') == 3:
-                        msg_dict['voice'] = 4
-                    elif past_item.get('voice') == 4:
-                        msg_dict['voice'] = 5
-                    elif past_item.get('voice') == 5:
-                        msg_dict['voice'] = 6
-                    elif past_item.get('voice') == 6:
-                        msg_dict['voice'] = 1
-                break
+                if 'voice' in past_item:
+                 active_voices.add(past_item['voice'])
+
+        chosen_voice = 1
+        while chosen_voice in active_voices:
+            chosen_voice += 1
+
+        if chosen_voice > 18:
+            chosen_voice = 1
+
+        msg_dict['voice'] = chosen_voice
 
     midi_list.append(msg_dict)
 
@@ -108,12 +112,28 @@ for item in midi_list:
 print()
 
 
-final_string_data = " ".join(
+most_voices = {}
+for item in midi_list:
+    if 'channel' in item and 'voice' in item:
+        channel = item['channel']
+        voice = item['voice']
+
+        if channel not in most_voices or voice > most_voices[channel]:
+         most_voices[channel] = voice
+
+header_list = [f"{ch}{v}" for ch, v in sorted(most_voices.items())]
+header_string = "Max Voices: " + ", ".join(header_list) + "\n\n"
+
+final_string = " ".join(
     f"{item['time']}{item['channel']}{item['voice']}{item['note']}" 
     for item in midi_list 
     if 'note' in item and 'channel' in item and 'voice' in item
 )
-export_folder = Path(r"C:\Users\dakoda\Documents\code_things\songs")
+
+final_song = header_string + final_string
+
+
+export_folder = Path(song_dir)
 
 songname = input("name ")+ ".txt"
 
@@ -123,7 +143,7 @@ output_file = export_folder.joinpath(songname)
 file_path = export_folder.joinpath(songname)
 
 
-output_file.write_text(final_string_data)
+output_file.write_text(final_song)
 
 print(f"\n\n->saved to: {output_file.name}")
 #hii
