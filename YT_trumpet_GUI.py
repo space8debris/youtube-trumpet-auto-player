@@ -1,5 +1,8 @@
 import PySimpleGUI as sg
 from pathlib import Path
+import subprocess
+import sys
+from mido import MidiFile
 
 instruments = [
     "Trumpet",
@@ -14,18 +17,14 @@ song_dir = home / "Documents" / "YT_trumpet" / "songs"
 logo_path = home / "Documents" / "YT_trumpet" / "Big_Logo.png"
 icon_path = home / "Documents" / "YT_trumpet" / "Big_Logo_alt.ico"
 
-track_number = 5
+
 
 midi_files = [
     file.name
     for file in midi_dir.iterdir()
     if file.suffix.lower() in (".mid", ".midi")
 ]
-song_files = [
-    file.name
-    for file in song_dir.iterdir()
-    if file.suffix.lower() == ".txt"
-]
+
 
 layout = [
     [sg.Text("What would you like to do?")],
@@ -65,14 +64,32 @@ while True:
                 else:
                     midi_path = midi_dir / selected_file
 
+                    mid = MidiFile(midi_path)
+
+                    song_names = {}
+                    for i, track in enumerate(mid.tracks):
+                        song_names[i] = f"Track {i} (Unnamed)"
+                        for track_msg in track:
+                            if track_msg.type in ['track_name', 'instrument_name']:
+                                song_names[i] = track_msg.name
+                                break
+
+                    channel_track_info = {}
+                    for i, track in enumerate(mid.tracks):
+                        for track_msg in track:
+                            if track_msg.type == 'note_on' and track_msg.velocity > 0 and hasattr(track_msg, 'channel'):
+                                channel_track_info[track_msg.channel] = song_names[i]
+
+                    sorted_channels = sorted(list(channel_track_info.keys()))
+
                     track_layout = [
                         [sg.Text("Assign instruments")],
                     ]
 
-                    for i in range(track_number):
+                    for ch in sorted_channels:
                         track_layout.append([
-                            sg.Text(f"Track {i + 1}"),
-                            sg.Combo(instruments, key=f"-TRACK-{i}-", readonly=True)
+                            sg.Text(f"Channel {ch} ({channel_track_info[ch]})"),
+                            sg.Combo(instruments, key=f"-CH-{ch}-", readonly=True)
                         ])
 
                     track_layout.append([
@@ -94,8 +111,8 @@ while True:
                         if track_event == "Continue":
                             assignments = []
 
-                            for i in range(track_number):
-                                assignments.append(track_values[f"-TRACK-{i}-"])
+                            for ch in sorted_channels:
+                                assignments.append(track_values[f"-CH-{ch}-"])
 
                             break
 
@@ -103,20 +120,49 @@ while True:
                     print(midi_path)
                     print(assignments)
                     print(midi_name)
-                    #convert code go here
+                    name_to_letter = {"Trumpet": "T", "Drums": "D", "Piano": "P", "Guitar": "G"}
+
+                    answer_lines = []
+                    for choice in assignments:
+                        letter = name_to_letter.get(choice, "")  
+                        answer_lines.append(letter)
+
+                    answer_lines.append(midi_name)  
+
+                    input_text = "\n".join(answer_lines) + "\n"
+
+                    result = subprocess.run(
+                        [sys.executable, "midi maker.py", str(midi_path)],
+                        input=input_text,
+                        text=True,
+                        cwd=home / "Documents" / "YT_trumpet",
+                        capture_output=True
+                    )
+
+                    print("STDOUT:", result.stdout)
+                    print("STDERR:", result.stderr)
+
+                   
                     break
         
         track_window.close()
         midi_window.close()
 
     if event == "Play song":
+        song_files = [
+        file.name
+        for file in song_dir.iterdir()
+        if file.suffix.lower() == ".txt"
+         ]
         song_layout = [
             [sg.Text("Select song")],
             [sg.Combo(song_files, key="-SONG-", readonly=True)],
             [sg.Button('Play')],
             [sg.VPush()],
             [sg.Push(), sg.Image(filename=logo_path)]
-        ]
+          ]
+
+        
 
         song_window = sg.Window('Song player', song_layout, size=(350, 250), icon=icon_path)
 
@@ -134,7 +180,10 @@ while True:
                     song_path = song_dir / selected_file
 
                     print(song_path)
-                    #play code go here i think
+                    subprocess.Popen(
+                    [sys.executable, "many yt trumpets .py", str(song_path)],
+                    cwd=home / "Documents" / "YT_trumpet"
+                    )
                     break
 
         song_window.close()
