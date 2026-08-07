@@ -1,5 +1,8 @@
 from pathlib import Path
 from mido import MidiFile
+import sys   
+
+print("ARGV:", sys.argv)
 
 home = Path.home()
 
@@ -12,17 +15,21 @@ file_list = []
 midi_list = []
 absolute_time = 0.0
 
-for item in folder_path.iterdir():
-    if item.is_file():
-        file_list.append(item.name)
+if len(sys.argv) > 1:
+    midi_file = Path(sys.argv[1])
+    print(f"Received file from prent: {midi_file}")
+else:
+    for item in folder_path.iterdir():
+        if item.is_file():
+            file_list.append(item.name)
 
-print('\n'.join(f"{i}. {file}" for i, file in enumerate(file_list, 1)))
+    print('\n'.join(f"{i}. {file}" for i, file in enumerate(file_list, 1)))
 
-midi_num = int(input("what file:"))
-midi = file_list[midi_num-1]
-print(midi)
-midi_file = folder_path.joinpath(midi)
-print(midi_file)
+    midi_num = int(input("what file:"))
+    midi = file_list[midi_num-1]
+    print(midi)
+    midi_file = folder_path.joinpath(midi)
+    print(midi_file)
 
 mid = MidiFile(midi_file)
 
