@@ -7,12 +7,12 @@ if exist "%USERPROFILE%\OneDrive\Documents" (
     set "DOCS_PATH=%USERPROFILE%\Documents"
 )
 
-mkdir "%USERPROFILE%\Documents\YT_trumpet"
-mkdir "%USERPROFILE%\Documents\YT_trumpet\insterments"
-mkdir "%USERPROFILE%\Documents\YT_trumpet\midis"
-mkdir "%USERPROFILE%\Documents\YT_trumpet\songs"
+mkdir "%DOCS_PATH%\YT_trumpet"
+mkdir "%DOCS_PATH%\YT_trumpet\insterments"
+mkdir "%DOCS_PATH%\YT_trumpet\midis"
+mkdir "%DOCS_PATH%\YT_trumpet\songs"
 
-set "song_DIR=%USERPROFILE%\Documents\YT_trumpet\insterments"
+set "song_DIR=%DOCS_PATH%\YT_trumpet\insterments"
 
 cd /d "%song_DIR%"
 
@@ -20,7 +20,7 @@ curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/he
 curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/piano_fast.mp4" -o "piano_fast.mp4"
 curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/trumpet_fast.mp4" -o "Trumpet_fast.mp4"
 
-set "file_DIR=%USERPROFILE%\Documents\YT_trumpet"
+set "file_DIR=%DOCS_PATH%\YT_trumpet"
 
 cd /d "%file_DIR%"
 
