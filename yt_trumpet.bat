@@ -1,5 +1,12 @@
 @echo off
 cls
+
+if exist "%USERPROFILE%\OneDrive\Documents" (
+    set "DOCS_PATH=%USERPROFILE%\OneDrive\Documents"
+) else (
+    set "DOCS_PATH=%USERPROFILE%\Documents"
+)
+
 mkdir "%USERPROFILE%\Documents\YT_trumpet"
 mkdir "%USERPROFILE%\Documents\YT_trumpet\insterments"
 mkdir "%USERPROFILE%\Documents\YT_trumpet\midis"
