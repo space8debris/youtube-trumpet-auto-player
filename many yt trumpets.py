@@ -113,7 +113,7 @@ for i in range(len(all_pipes)):
     row = i // 6
     positions.append((col * grid_w, row * grid_h))
 
-MPV_PATH = r"C:\MPV\mpv.exe"
+MPV_PATH = home / "Documents" / "YT_trumpet" / "MPV" / "mpv.exe"
 
 pipes = []
 for i, pipe in enumerate(all_pipes):
