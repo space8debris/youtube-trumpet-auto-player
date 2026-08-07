@@ -38,6 +38,8 @@ curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/he
 curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/midi%20maker.py" -o "midi maker.py"
 curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/blob/main/logo/Big_Logo.png?raw=true" -o "Big_Logo.png"
 curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/blob/main/logo/Logo.png?raw=true" -o "Logo.png"
+curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/logos/Big_Logo_Alt.ico" -o "Big_Logo_Alt.ico"
+curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/blob/main/logos/Big_Logo_Alt.png?raw=true" -o "Big_Logo_Alt.png"
 
 
 py -3.13 --version >nul 2>&1
