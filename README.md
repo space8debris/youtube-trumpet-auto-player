@@ -6,7 +6,7 @@ requirements
 1.vscode(for now)
 
 install.
-run the .bat then do what it says
+1.run the .bat then do what it says
 
 
 use.
