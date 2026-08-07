@@ -1,6 +1,14 @@
 @echo off
 cls
 
+
+net session >nul 2>&1
+if %errorLevel% neq 0 (
+    echo Requesting administrative privileges...
+    powershell -Command "Start-Process '%~f0' -Verb RunAs"
+    exit /b
+)
+
 if exist "%USERPROFILE%\OneDrive\Documents" (
     set "DOCS_PATH=%USERPROFILE%\OneDrive\Documents"
 ) else (
@@ -11,6 +19,7 @@ mkdir "%DOCS_PATH%\YT_trumpet"
 mkdir "%DOCS_PATH%\YT_trumpet\insterments"
 mkdir "%DOCS_PATH%\YT_trumpet\midis"
 mkdir "%DOCS_PATH%\YT_trumpet\songs"
+mkdir "%DOCS_PATH%\YT_trumpet\MPV"
 
 set "song_DIR=%DOCS_PATH%\YT_trumpet\insterments"
 
@@ -50,7 +59,7 @@ py -m pip install PySimpleGUI
 
 start "" "https://sourceforge.net/projects/mpv-player-windows/files/64bit-v3/"
 
-echo done now go to the link dowload the newest 3v if on new hardwere and then extract to sytem root
+echo done now go to the link dowload the newest 3v if on new hardwere and then extract to mpv folder in the yt trumpet folder
 
 pause
 exit
