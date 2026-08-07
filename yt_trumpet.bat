@@ -16,10 +16,10 @@ set "song_DIR=%DOCS_PATH%\YT_trumpet\insterments"
 
 cd /d "%song_DIR%"
 
-curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/drum_fast.mp4" -o "drum_fast.mp4"
-curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/piano_fast.mp4" -o "piano_fast.mp4"
-curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/trumpet_fast.mp4" -o "Trumpet_fast.mp4"
-curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/Guitar_fast.mp4" -o "Guitar_fast.mp4"
+curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/insterments/drum_fast.mp4" -o "drum_fast.mp4"
+curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/insterments/piano_fast.mp4" -o "piano_fast.mp4"
+curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/insterments/trumpet_fast.mp4" -o "Trumpet_fast.mp4"
+curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/insterments/Guitar_fast.mp4" -o "Guitar_fast.mp4"
 
 set "file_DIR=%DOCS_PATH%\YT_trumpet"
 
