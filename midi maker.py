@@ -47,11 +47,11 @@ for channel in sorted_channels:
     print(f"Channel {channel:2d} -> {track_text}")
 
 instrument_map = {}
-print("\n(T, D, P) hit Enter to skip:")
+print("\n(T, D, P, G) hit Enter to skip:")
 for channel in sorted_channels:
     user_choice = input(f"Channel {channel} ({channel_track_info[channel]}) -> (T/D/P): ").strip().upper()
     
-    if user_choice in ['T', 'D', 'P']:
+    if user_choice in ['T', 'D', 'P', 'G']:
        instrument_map[channel] = user_choice
 #stack overflow was usefull
 print(f"\ninstruments: {instrument_map}\nProcessing timeline...")

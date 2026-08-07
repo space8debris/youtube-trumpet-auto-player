@@ -27,7 +27,7 @@ chosen_text_file = text_songs[song_selection_num - 1]
 target_path = folder.joinpath(chosen_text_file)
 string = target_path.read_text()
 
-min_voices_per = {"T": 0, "D": 0, "P": 0}
+min_voices_per = {"T": 0, "D": 0, "P": 0, "G": 0}
 song_data = string
 
 
@@ -50,6 +50,7 @@ if "Max Voices:" in string:
 instruments = {
     "T": {
         "url": str(instruments_dir / "trumpet_fast.mp4"),
+        "volume": 40,
         "midi_note": 60,          
         "seek_start": 15.2,            
         "voices": [f"T{i}" for i in range(1, min_voices_per["T"] + 1)],
@@ -57,6 +58,7 @@ instruments = {
     },
     "D": {
         "url": str(instruments_dir / "drum_fast.mp4"),
+        "volume": 40,
         "midi_note": 60,          
         "seek_start": 15.0,            
         "voices": [f"D{i}" for i in range(1, min_voices_per["D"] + 1)],    
@@ -64,11 +66,20 @@ instruments = {
     },
     "P": {
         "url": str(instruments_dir / "piano_fast.mp4"),
+        "volume": 40,
         "midi_note": 60,          
         "seek_start": 15.0,            
         "voices": [f"P{i}" for i in range(1, min_voices_per["P"] + 1)],  
         "voice_index": 0
     },
+     "G": {
+            "url": str(instruments_dir / "Guitar_fast.mp4"),
+            "volume": 60,
+            "midi_note": 60,          
+            "seek_start": 15.0,            
+            "voices": [f"G{i}" for i in range(1, min_voices_per["G"] + 1)],  
+            "voice_index": 0
+        },
 }
 
 all_pipes = []
@@ -163,6 +174,8 @@ end_time = max(thing.keys()) if thing else 0
 
 start_time = time.perf_counter()
 
+active_voices = {}
+
 while ct <= end_time:
     ct = round(time.perf_counter() - start_time, 2)
 
@@ -187,13 +200,14 @@ while ct <= end_time:
                 pitch_multiplier = 2 ** (semitone_offset / 12)
                 #honesly no clue how this eqation works but it dose i found i on wikipida 
                 try:
+                    conntrol.command("set_property", "volume", inst_data["volume"])
                     conntrol.command("set_property", "pitch", pitch_multiplier)
                     conntrol.command("seek", inst_data["seek_start"], "absolute+keyframes")
+
                 except:
                     pass
-                    
-      
-    
+
+
     time.sleep(0.001)
     #let me just
     #make it a nice 200 lines
