@@ -1,9 +1,9 @@
 @echo off
 cls
-mkdir "%USERPROFILE%\Documents\YT_trumpet" 2>nul
-mkdir "%USERPROFILE%\Documents\YT_trumpet\insterments" 2>nul
-mkdir "%USERPROFILE%\Documents\YT_trumpet\midis" 2>nul
-mkdir "%USERPROFILE%\Documents\YT_trumpet\songs" 2>nul
+mkdir "%USERPROFILE%\Documents\YT_trumpet"
+mkdir "%USERPROFILE%\Documents\YT_trumpet\insterments"
+mkdir "%USERPROFILE%\Documents\YT_trumpet\midis"
+mkdir "%USERPROFILE%\Documents\YT_trumpet\songs"
 
 set "song_DIR=%USERPROFILE%\Documents\YT_trumpet\insterments"
 
