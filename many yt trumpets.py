@@ -80,10 +80,10 @@ wfl = {pipe_name: i for i, pipe_name in enumerate(all_pipes)}
 screen_w, screen_h = pyautogui.size()
 
 windows = len(all_pipes)
-needed = max(1, min(6, windows)) 
+needed = max(1, min(10, windows)) 
 
 grid_w = screen_w// 6
-grid_h = screen_h// 3
+grid_h = screen_h// 6
 
 positions = []
 for i in range(len(all_pipes)):
@@ -131,8 +131,7 @@ conntrols = [retry_pipe_thing(p) for p in pipes]
 
 #this is were setup code endss i dont like to put comments
 
-
-order = re.compile(r"(?P<time>\d+\.?\d*)(?P<letter>[A-Za-z])(?P<voice>\d)(?P<note>\d+)")
+order = re.compile(r"(?P<time>\d+\.?\d*)(?P<letter>[A-Za-z])(?P<voice>\d{1,2})(?P<note>\d{2})")
 
 def spliter(token):
     m = order.match(token)
@@ -175,7 +174,7 @@ while ct <= end_time:
             if letter in instruments:
                 inst_data = instruments[letter]
                 
-                picked_pipe = f"{letter}{voice}"
+                picked_pipe = f"{letter}{int(voice)}"
                 
                 conntrol_list_i_am_running_out_of_names = wfl[picked_pipe]
                 conntrol = conntrols[conntrol_list_i_am_running_out_of_names]
