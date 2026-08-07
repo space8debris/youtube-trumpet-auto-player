@@ -9,17 +9,19 @@ from pathlib import Path
 from mido import MidiFile
 import sys
 
+
+home = Path.home()
+instruments_dir = home / "Documents" / "YT_trumpet" / "insterments"
+folder = home / "Documents" / "YT_trumpet" / "songs"
+root = home / "Documents" / "YT_trumpet"
+
 ask = input("would you like to convert a midi Y/N: ")
 if ask == 'Y':
     subprocess.run(
         [sys.executable, "midi maker.py"],
-        cwd=r"C:\Users\dakoda\Documents\YT_trumpet"
+        cwd=root
     )
 
-home = Path.home()
-
-instruments_dir = home / "Documents" / "YT_trumpet" / "insterments"
-folder = home / "Documents" / "YT_trumpet" / "songs"
 
 
 text_songs = []
