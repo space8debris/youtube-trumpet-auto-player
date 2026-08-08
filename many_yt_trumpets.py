@@ -34,7 +34,7 @@ else:
 
 string = target_path.read_text()
 
-min_voices_per = {"T": 0, "D": 0, "P": 0, "G": 0}
+min_voices_per = {"T": 0, "D": 0, "P": 0, "G": 0, "S":0}
 song_data = string
 
 
@@ -87,6 +87,14 @@ instruments = {
             "voices": [f"G{i}" for i in range(1, min_voices_per["G"] + 1)],  
             "voice_index": 0
         },
+    "S": {
+            "url": str(instruments_dir / "stylophone_fast.mp4"),
+            "volume": 90,
+            "midi_note": 60,          
+            "seek_start": 15.2,            
+            "voices": [f"S{i}" for i in range(1, min_voices_per["S"] + 1)],
+            "voice_index": 0               
+            },
 }
 
 all_pipes = []
@@ -203,11 +211,12 @@ while ct <= end_time:
                 conntrol = conntrols[conntrol_list_i_am_running_out_of_names]
                 
                 midi_note = int(note)
-                
-                semitone_offset = midi_note - inst_data["midi_note"]
-                
-                
-                pitch_multiplier = 2 ** (semitone_offset / 12)
+
+                if letter == "D":
+                    pitch_multiplier = 1.0   # no pitch shift for drums
+                else:
+                    semitone_offset = midi_note - inst_data["midi_note"]
+                    pitch_multiplier = 2 ** (semitone_offset / 12)
                 #honesly no clue how this eqation works but it dose i found i on wikipida 
                 try:
 
