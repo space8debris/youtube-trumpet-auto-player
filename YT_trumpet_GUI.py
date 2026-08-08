@@ -7,6 +7,7 @@ from mido import MidiFile
 instruments = [
     "Trumpet",
     "Piano",
+    "Synth",
     "Guitar",
     "Drums"
 ]
