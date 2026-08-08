@@ -101,7 +101,7 @@ while True:
                         [sg.Push(), sg.Image(filename=logo_path)]
                     ])
 
-                    track_window = sg.Window("Insturment assignment", track_layout, icon=icon_path)
+                    track_window = sg.Window("Insturment assignment", track_layout, size=(300,250), icon=icon_path)
 
                     while True:
                         track_event, track_values = track_window.read()

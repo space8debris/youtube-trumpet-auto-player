@@ -79,8 +79,6 @@ for msg in mid:
         
     msg_dict = msg.dict()
 
-    msg_dict.pop('velocity', None)
-
     msg_dict['time'] = round(absolute_time, 2)
 
     if 'channel' in msg_dict:
@@ -115,7 +113,7 @@ for msg in mid:
 
 for item in midi_list:
     if 'note' in item and 'channel' in item and 'voice' in item:
-        print(f"{item['time']}{item['channel']}{item['voice']}{item['note']}", end=" ")
+        print(f"{item['time']}{item['channel']}{item['voice']}{item['note']}{item['velocity']:03d}", end=" ")
 print()
 
 
@@ -132,7 +130,7 @@ header_list = [f"{ch}{v}" for ch, v in sorted(most_voices.items())]
 header_string = "Max Voices: " + ", ".join(header_list) + "\n\n"
 
 final_string = " ".join(
-    f"{item['time']}{item['channel']}{item['voice']}{item['note']}" 
+    f"{item['time']}{item['channel']}{item['voice']}{item['note']}{item['velocity']:03d}" 
     for item in midi_list 
     if 'note' in item and 'channel' in item and 'voice' in item
 )
