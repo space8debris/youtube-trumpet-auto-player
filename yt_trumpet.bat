@@ -1,14 +1,6 @@
 @echo off
 cls
 
-
-net session >nul 2>&1
-if %errorLevel% neq 0 (
-    echo Requesting administrative privileges...
-    powershell -Command "Start-Process '%~f0' -Verb RunAs"
-    exit /b
-)
-
 if exist "%USERPROFILE%\OneDrive\Documents" (
     set "DOCS_PATH=%USERPROFILE%\OneDrive\Documents"
 ) else (
@@ -19,27 +11,22 @@ mkdir "%DOCS_PATH%\YT_trumpet"
 mkdir "%DOCS_PATH%\YT_trumpet\insterments"
 mkdir "%DOCS_PATH%\YT_trumpet\midis"
 mkdir "%DOCS_PATH%\YT_trumpet\songs"
-mkdir "%DOCS_PATH%\YT_trumpet\MPV"
 
 set "song_DIR=%DOCS_PATH%\YT_trumpet\insterments"
 
 cd /d "%song_DIR%"
 
-curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/insterments/drum_fast.mp4" -o "drum_fast.mp4"
-curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/insterments/piano_fast.mp4" -o "piano_fast.mp4"
-curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/insterments/trumpet_fast.mp4" -o "Trumpet_fast.mp4"
-curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/insterments/Guitar_fast.mp4" -o "Guitar_fast.mp4"
+curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/drum_fast.mp4" -o "drum_fast.mp4"
+curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/piano_fast.mp4" -o "piano_fast.mp4"
+curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/trumpet_fast.mp4" -o "Trumpet_fast.mp4"
+curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/Guitar_fast.mp4" -o "Guitar_fast.mp4"
 
 set "file_DIR=%DOCS_PATH%\YT_trumpet"
 
 cd /d "%file_DIR%"
 
 curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/many%20yt%20trumpets.py" -o "many yt trumpets.py"
-curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/midi%20maker.py" -o "midi maker.py"
-curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/blob/main/logo/Big_Logo.png?raw=true" -o "Big_Logo.png"
-curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/blob/main/logo/Logo.png?raw=true" -o "Logo.png"
-curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/logos/Big_Logo_Alt.ico" -o "Big_Logo_Alt.ico"
-curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/blob/main/logos/Big_Logo_Alt.png?raw=true" -o "Big_Logo_Alt.png"
+curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/midi%20thing%20hopfly.py" -o "midi maker.py"
 
 
 py -3.13 --version >nul 2>&1
@@ -61,7 +48,7 @@ py -m pip install PySimpleGUI
 
 start "" "https://sourceforge.net/projects/mpv-player-windows/files/64bit-v3/"
 
-echo done now go to the link dowload the newest 3v if on new hardwere and then extract to mpv folder in the yt trumpet folder
+echo done now go to the link dowload the newest 3v if on new hardwere and then extract to sytem root
 
 pause
 exit
