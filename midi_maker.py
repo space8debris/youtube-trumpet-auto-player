@@ -103,7 +103,7 @@ for msg in mid:
         while chosen_voice in active_voices:
             chosen_voice += 1
 
-        if chosen_voice > 18:
+        if chosen_voice > 180:
             chosen_voice = 1
 
         msg_dict['voice'] = chosen_voice

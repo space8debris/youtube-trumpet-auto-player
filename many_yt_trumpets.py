@@ -74,7 +74,7 @@ instruments = {
     "P": {
         "url": str(instruments_dir / "piano_fast.mp4"),
         "volume": 90,
-        "midi_note": 62,          
+        "midi_note": 64,          
         "seek_start": 120.2,            
         "voices": [f"P{i}" for i in range(1, min_voices_per["P"] + 1)],  
         "voice_index": 0
@@ -101,7 +101,7 @@ windows = len(all_pipes)
 needed = max(1, min(10, windows)) 
 
 grid_w = screen_w// 6
-grid_h = screen_h// 6
+grid_h = screen_h// 12
 
 positions = []
 for i in range(len(all_pipes)):
@@ -146,6 +146,10 @@ def retry_pipe_thing(pipe_name, tries=30, delay=0.5):
 #same with this part lolz
 
 conntrols = [retry_pipe_thing(p) for p in pipes]
+
+last_played = {pipe: 0.0 for pipe in pipes}
+paused_state = {pipe: False for pipe in pipes}
+IDLE_PAUSE_SECONDS = 2.0
 
 #this is were setup code endss i dont like to put comments
 
@@ -207,7 +211,10 @@ while ct <= end_time:
                 #honesly no clue how this eqation works but it dose i found i on wikipida 
                 try:
 
-                    velocity_scale = int(velocity) / 127
+                    if paused_state[picked_pipe]:
+                        conntrol.command("set_property", "pause", False)
+                        paused_state[picked_pipe] = False
+
                     velocity_scale = int(velocity) / 127
                     scaled_volume = inst_data["volume"] * velocity_scale
                     scaled_volume = max(scaled_volume, inst_data["volume"] * 0.3)
@@ -216,9 +223,19 @@ while ct <= end_time:
                     conntrol.command("set_property", "pitch", pitch_multiplier)
                     conntrol.command("seek", inst_data["seek_start"], "absolute+keyframes")
 
+                    last_played[picked_pipe] = ct
+
                 except:
                     pass
 
+    for pipe in pipes:
+        if not paused_state[pipe] and (ct - last_played[pipe]) > IDLE_PAUSE_SECONDS:
+            idx = wfl[pipe]
+            try:
+                conntrols[idx].command("set_property", "pause", True)
+                paused_state[pipe] = True
+            except Exception:
+                pass
 
     time.sleep(0.001)
     #let me just
