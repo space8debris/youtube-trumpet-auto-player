@@ -44,9 +44,9 @@ curl -L "https://githubusercontent.com" -o "Guitar_fast.mp4"
 
 set "file_DIR=%DOCS_PATH%\YT_trumpet"
 cd /d "%file_DIR%"
-curl -L "https://githubusercontent.com" -o "YT_trumpet_GUI.py"
-curl -L "https://githubusercontent.com" -o "many yt trumpets.py"
-curl -L "https://githubusercontent.com" -o "midi maker.py"
+curl -L "https://raw.githubusercontent.com/space8debris/youtube-trumpet-auto-player/refs/heads/main/YT_trumpet_GUI.py" -o "YT_trumpet_GUI.py"
+curl -L "https://raw.githubusercontent.com/space8debris/youtube-trumpet-auto-player/refs/heads/main/many%20yt%20trumpets%20.py" -o "many yt trumpets.py"
+curl -L "https://raw.githubusercontent.com/space8debris/youtube-trumpet-auto-player/refs/heads/main/midi%20maker.py" -o "midi maker.py"
 
 curl -L "https://://githubusercontent.com/space8debris/youtube-trumpet-auto-player/refs/heads/main/logos/Big_Logo.png" -o "Big_Logo.png"
 curl -L "https://://githubusercontent.com/space8debris/youtube-trumpet-auto-player/refs/heads/main/logos/Logo.png" -o "Logo.png"
