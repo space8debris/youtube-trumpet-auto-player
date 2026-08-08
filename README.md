@@ -10,7 +10,7 @@ install.
 1.run the .bat then do what it says
 
 
-use.run gui script
+use.run gui script in vscode
 
-wip
+wip.
 (more instruments,fixing the drums) 
