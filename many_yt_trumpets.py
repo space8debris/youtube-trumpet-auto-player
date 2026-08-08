@@ -155,7 +155,7 @@ def spliter(token):
     m = order.match(token)
     if not m:
         raise ValueError(f"Bad entry: {token}")
-    return float(m.group("time")), m.group("letter"), m.group("voice"), m.group("note")
+    return float(m.group("time")), m.group("letter"), m.group("voice"), m.group("note"), m.group("velocity")
 
 split = song_data.split()
 play = [spliter(t) for t in split]
@@ -187,7 +187,7 @@ while ct <= end_time:
 
     if ct in thing:
         for info in thing[ct]:
-            event_time, letter, voice, note = info
+            event_time, letter, voice, note, velocity = info
             print(f"Time {event_time}: play {letter}{voice} note {note}")
 
             if letter in instruments:
@@ -206,6 +206,10 @@ while ct <= end_time:
                 pitch_multiplier = 2 ** (semitone_offset / 12)
                 #honesly no clue how this eqation works but it dose i found i on wikipida 
                 try:
+
+                    velocity_scale = int(velocity) / 127
+                    scaled_volume = inst_data["volume"] * velocity_scale
+                    
                     conntrol.command("set_property", "volume", inst_data["volume"])
                     conntrol.command("set_property", "pitch", pitch_multiplier)
                     conntrol.command("seek", inst_data["seek_start"], "absolute+keyframes")
