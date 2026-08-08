@@ -1,7 +1,6 @@
 @echo off
 cls
 
-
 net session >nul 2>&1
 if %errorLevel% neq 0 (
     echo Requesting administrative privileges...
@@ -17,9 +16,11 @@ if exist "%USERPROFILE%\OneDrive\Documents" (
 
 py -3.13 --version >nul 2>&1
 if %errorLevel%==0 (
+    echo Python 3.13 detected. Checking dependencies...
     goto :dependencies
 )
 
+echo Python 3.13 not found. Installing...
 winget install --id Python.Python.3.13 --silent --accept-source-agreements --accept-package-agreements
 
 for /f "tokens=2*" %%A in ('reg query "HKLM\System\CurrentControlSet\Control\Session Manager\Environment" /v Path') do set "SYS_PATH=%%B"
@@ -38,45 +39,31 @@ mkdir "%DOCS_PATH%\YT_trumpet\songs"
 mkdir "%DOCS_PATH%\YT_trumpet\MPV"
 
 set "song_DIR=%DOCS_PATH%\YT_trumpet\insterments"
-
 cd /d "%song_DIR%"
+curl -L "https://githubusercontent.com" -o "drum_fast.mp4"
+curl -L "https://githubusercontent.com" -o "piano_fast.mp4"
+curl -L "https://githubusercontent.com" -o "Trumpet_fast.mp4"
+curl -L "https://githubusercontent.com" -o "Guitar_fast.mp4"
 
-curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/insterments/drum_fast.mp4" -o "drum_fast.mp4"
-curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/insterments/piano_fast.mp4" -o "piano_fast.mp4"
-curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/insterments/trumpet_fast.mp4" -o "Trumpet_fast.mp4"
-curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/insterments/Guitar_fast.mp4" -o "Guitar_fast.mp4"
-
+:: Step 5: Download Application Scripts and Logos
 set "file_DIR=%DOCS_PATH%\YT_trumpet"
-
 cd /d "%file_DIR%"
+curl -L "https://githubusercontent.com" -o "YT_trumpet_GUI.py"
+curl -L "https://githubusercontent.com" -o "many yt trumpets.py"
+curl -L "https://githubusercontent.com" -o "midi maker.py"
 
-curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/YT_trumpet_GUI.py" -o "YT_trumpet_GUI.py"
-curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/many%20yt%20trumpets%20.py" -o "many yt trumpets.py"
-curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/midi%20maker.py" -o "midi maker.py"
-curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/blob/main/logos/Big_Logo.png?raw=true" -o "Big_Logo.png"
-curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/blob/main/logos/Logo.png?raw=true" -o "Logo.png"
-curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/logos/Big_Logo_Alt.ico" -o "Big_Logo_Alt.ico"
-curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/blob/main/logos/Big_Logo_Alt.png?raw=true" -o "Big_Logo_Alt.png"
+:: FIXED: Changed /blob/ to ://githubusercontent.com to stop downloading HTML text
+curl -L "https://://githubusercontent.com/space8debris/youtube-trumpet-auto-player/refs/heads/main/logos/Big_Logo.png" -o "Big_Logo.png"
+curl -L "https://://githubusercontent.com/space8debris/youtube-trumpet-auto-player/refs/heads/main/logos/Logo.png" -o "Logo.png"
+curl -L "https://://githubusercontent.com/space8debris/youtube-trumpet-auto-player/refs/heads/main/logos/Big_Logo_Alt.ico" -o "Big_Logo_Alt.ico"
+curl -L "https://://githubusercontent.com/space8debris/youtube-trumpet-auto-player/refs/heads/main/logos/Big_Logo_Alt.png" -o "Big_Logo_Alt.png"
 
 
-py -3.13 --version >nul 2>&1
+winget install --id=mpv.net --silent --accept-source-agreements --accept-package-agreements >nul 2>&1
 
-for /f "tokens=2*" %%A in ('reg query "HKLM\System\CurrentControlSet\Control\Session Manager\Environment" /v Path') do set "SYS_PATH=%%B"
-for /f "tokens=2*" %%A in ('reg query "HKCU\Environment" /v Path') do set "USER_PATH=%%B"
-set "PATH=%SYS_PATH%;%USER_PATH%"
 
-py -m ensurepip --default-pip
-py -m pip install --upgrade pip
-
-py -m pip install pyautogui
-py -m pip install mpv
-py -m pip install python_mpv_jsonipc
-py -m pip install PySimpleGUI
-
-start "" "https://sourceforge.net/projects/mpv-player-windows/files/64bit-v3/"
-
-echo done now go to the link dowload the newest 3v if on new hardwere and then extract to MPV folder in the yt trumpet folder
+start "" "https://sourceforge.net"
+echo Done go to the link download the newest v3 thing and extract it into the MPV folder in your YT_trumpet.
 
 pause
 exit
-
