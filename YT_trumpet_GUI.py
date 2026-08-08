@@ -121,7 +121,7 @@ while True:
                     print(midi_path)
                     print(assignments)
                     print(midi_name)
-                    name_to_letter = {"Trumpet": "T", "Drums": "D", "Piano": "P", "Guitar": "G"}
+                    name_to_letter = {"Trumpet": "T", "Drums": "D", "Piano": "P", "Guitar": "G", "Synth": "S"}
 
                     answer_lines = []
                     for choice in assignments:
