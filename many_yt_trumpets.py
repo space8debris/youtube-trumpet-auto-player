@@ -57,7 +57,7 @@ if "Max Voices:" in string:
 instruments = {
     "T": {
         "url": str(instruments_dir / "trumpet_fast.mp4"),
-        "volume": 60,
+        "volume": 90,
         "midi_note": 60,          
         "seek_start": 15.2,            
         "voices": [f"T{i}" for i in range(1, min_voices_per["T"] + 1)],
@@ -65,7 +65,7 @@ instruments = {
     },
     "D": {
         "url": str(instruments_dir / "drum_fast.mp4"),
-        "volume": 60,
+        "volume": 90,
         "midi_note": 60,          
         "seek_start": 15.0,            
         "voices": [f"D{i}" for i in range(1, min_voices_per["D"] + 1)],    
@@ -73,7 +73,7 @@ instruments = {
     },
     "P": {
         "url": str(instruments_dir / "piano_fast.mp4"),
-        "volume": 60,
+        "volume": 90,
         "midi_note": 60,          
         "seek_start": 15.0,            
         "voices": [f"P{i}" for i in range(1, min_voices_per["P"] + 1)],  
@@ -81,7 +81,7 @@ instruments = {
     },
      "G": {
             "url": str(instruments_dir / "Guitar_fast.mp4"),
-            "volume": 70,
+            "volume": 90,
             "midi_note": 60,          
             "seek_start": 15.0,            
             "voices": [f"G{i}" for i in range(1, min_voices_per["G"] + 1)],  
@@ -188,7 +188,7 @@ while ct <= end_time:
     if ct in thing:
         for info in thing[ct]:
             event_time, letter, voice, note, velocity = info
-            print(f"Time {event_time}: play {letter}{voice} note {note}")
+            print(f"Time {event_time}: play {letter}{voice} note {note} velocity {velocity} ")
 
             if letter in instruments:
                 inst_data = instruments[letter]
@@ -208,9 +208,11 @@ while ct <= end_time:
                 try:
 
                     velocity_scale = int(velocity) / 127
+                    velocity_scale = int(velocity) / 127
                     scaled_volume = inst_data["volume"] * velocity_scale
-                    
-                    conntrol.command("set_property", "volume", inst_data["volume"])
+                    scaled_volume = max(scaled_volume, inst_data["volume"] * 0.3)
+
+                    conntrol.command("set_property", "volume", scaled_volume)
                     conntrol.command("set_property", "pitch", pitch_multiplier)
                     conntrol.command("seek", inst_data["seek_start"], "absolute+keyframes")
 
