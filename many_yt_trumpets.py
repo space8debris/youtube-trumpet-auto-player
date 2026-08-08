@@ -74,8 +74,8 @@ instruments = {
     "P": {
         "url": str(instruments_dir / "piano_fast.mp4"),
         "volume": 90,
-        "midi_note": 60,          
-        "seek_start": 15.0,            
+        "midi_note": 62,          
+        "seek_start": 120.2,            
         "voices": [f"P{i}" for i in range(1, min_voices_per["P"] + 1)],  
         "voice_index": 0
     },
