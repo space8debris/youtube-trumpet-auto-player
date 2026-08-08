@@ -132,7 +132,7 @@ while True:
                     input_text = "\n".join(answer_lines) + "\n"
 
                     result = subprocess.run(
-                        [sys.executable, "midi maker.py", str(midi_path)],
+                        [sys.executable, "midi_maker.py", str(midi_path)],
                         input=input_text,
                         text=True,
                         cwd=home / "Documents" / "YT_trumpet",
@@ -181,7 +181,7 @@ while True:
 
                     print(song_path)
                     subprocess.Popen(
-                    [sys.executable, "many yt trumpets .py", str(song_path)],
+                    [sys.executable, "many_yt_trumpets.py", str(song_path)],
                     cwd=home / "Documents" / "YT_trumpet"
                     )
                     break
