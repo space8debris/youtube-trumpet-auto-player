@@ -65,13 +65,15 @@ for /f "tokens=2*" %%A in ('reg query "HKLM\System\CurrentControlSet\Control\Ses
 for /f "tokens=2*" %%A in ('reg query "HKCU\Environment" /v Path') do set "USER_PATH=%%B"
 set "PATH=%SYS_PATH%;%USER_PATH%"
 
-py -m ensurepip --default-pip
-py -m pip install --upgrade pip
+py -3.13 -m ensurepip --default-pip
+py -3.13 -m pip install --upgrade pip
+py -3.13 -m pip install pyautogui python-mpv-jsonipc PySimpleGUI mido
 
 py -m pip install pyautogui
 py -m pip install mpv
 py -m pip install python_mpv_jsonipc
 py -m pip install PySimpleGUI
+py -m pip install mido
 
 start "" "https://sourceforge.net/projects/mpv-player-windows/files/64bit-v3/"
 
