@@ -9,6 +9,8 @@ vs code for now
 install.
 1.run the .bat then do what it says
 
+(tbh the .bat idk if it works iv been trying it works on my system but messes up really bad on some peoples so idk tbh)
+
 
 use.run gui script in vscode
 
