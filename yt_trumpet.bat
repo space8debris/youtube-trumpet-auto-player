@@ -2,7 +2,7 @@
 cls
 setlocal enabledelayedexpansion
 
-:: Request admin
+:: Request administrative 
 net session >nul 2>&1
 if %errorLevel% neq 0 (
     echo Requesting administrative privileges
@@ -45,24 +45,23 @@ set "song_DIR=!DOCS_PATH!\YT_trumpet\insterments"
 cd /d "!song_DIR!"
 
 echo Downloading instruments
-curl -L "https://github.com" -o "drum_fast.mp4"
-curl -L "https://github.com" -o "piano_fast.mp4"
-curl -L "https://github.com" -o "Trumpet_fast.mp4"
-curl -L "https://github.com" -o "Guitar_fast.mp4"
+curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/insterments/drum_fast.mp4" -o "drum_fast.mp4"
+curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/insterments/piano_fast.mp4" -o "piano_fast.mp4"
+curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/insterments/trumpet_fast.mp4" -o "Trumpet_fast.mp4"
+curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/insterments/Guitar_fast.mp4" -o "Guitar_fast.mp4"
 
 set "file_DIR=!DOCS_PATH!\YT_trumpet"
 cd /d "!file_DIR!"
 
-echo Downloading application files...
-curl -L "https://github.com" -o "YT_trumpet_GUI.py"
-curl -L "https://github.com" -o "many yt trumpets.py"
-curl -L "https://github.com" -o "midi maker.py"
-curl -L "https://github.com" -o "Big_Logo.png"
-curl -L "https://github.com" -o "Logo.png"
-curl -L "https://github.com" -o "Big_Logo_Alt.ico"
-curl -L "https://github.com" -o "Big_Logo_Alt.png"
+curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/YT_trumpet_GUI.py" -o "YT_trumpet_GUI.py"
+curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/many_yt_trumpets.py" -o "many yt trumpets.py"
+curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/midi_maker.py" -o "midi maker.py"
+curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/blob/main/logos/Big_Logo.png?raw=true" -o "Big_Logo.png"
+curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/blob/main/logos/Logo.png?raw=true" -o "Logo.png"
+curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/raw/refs/heads/main/logos/Big_Logo_Alt.ico" -o "Big_Logo_Alt.ico"
+curl -L "https://github.com/space8debris/youtube-trumpet-auto-player/blob/main/logos/Big_Logo_Alt.png?raw=true" -o "Big_Logo_Alt.png"
 
-start "" "https://sourceforge.net"
+start "" "https://sourceforge.net/projects/mpv-player-windows/files/64bit-v3/"
 
 echo done now go to the link dowload the newest 3v if on new hardwere and then extract to MPV folder in the yt trumpet folder
 
