@@ -195,44 +195,49 @@ start_time = time.perf_counter()
 active_voices = {}
 
 while ct <= end_time:
-    ct = round(time.perf_counter() - start_time, 2)
+    ct = time.perf_counter() - start_time
 
-    if ct in thing:
-        for info in thing[ct]:
-            event_time, letter, voice, note, velocity = info
-            print(f"Time {event_time}: play {letter}{voice} note {note} velocity {velocity} ")
-
-            if letter in instruments:
-                inst_data = instruments[letter]
-                
-                picked_pipe = f"{letter}{int(voice)}"
-                
-                conntrol_list_i_am_running_out_of_names = wfl[picked_pipe]
-                conntrol = conntrols[conntrol_list_i_am_running_out_of_names]
-                
-                midi_note = int(note)
-
-                if letter == "D":
-                    pitch_multiplier = 1.0   # no pitch shift for drums
-                else:
-                    semitone_offset = midi_note - inst_data["midi_note"]
-                    pitch_multiplier = 2 ** (semitone_offset / 12)
-                #honesly no clue how this eqation works but it dose i found i on wikipida 
-                try:
-
-                    if paused_state[picked_pipe]:
-                        conntrol.command("set_property", "pause", False)
-                        paused_state[picked_pipe] = False
-
-                    velocity_scale = int(velocity) / 127
-                    scaled_volume = inst_data["volume"] * velocity_scale
-                    scaled_volume = max(scaled_volume, inst_data["volume"] * 0.3)
-
-                    conntrol.command("set_property", "volume", scaled_volume)
-                    conntrol.command("set_property", "pitch", pitch_multiplier)
-                    conntrol.command("seek", inst_data["seek_start"], "absolute+keyframes")
-
-                    last_played[picked_pipe] = ct
+    past_time = [t for t in thing.keys() if t <= ct]
+    
+     if past_time:
+         for timestamp in past_time:
+            for info in thing.pop(timestamp):     
+        
+            
+                event_time, letter, voice, note, velocity = info
+                print(f"Time {event_time}: play {letter}{voice} note {note} velocity {velocity} ")
+    
+                if letter in instruments:
+                    inst_data = instruments[letter]
+                    
+                    picked_pipe = f"{letter}{int(voice)}"
+                    
+                    conntrol_list_i_am_running_out_of_names = wfl[picked_pipe]
+                    conntrol = conntrols[conntrol_list_i_am_running_out_of_names]
+                    
+                    midi_note = int(note)
+    
+                    if letter == "D":
+                        pitch_multiplier = 1.0   # no pitch shift for drums
+                    else:
+                        semitone_offset = midi_note - inst_data["midi_note"]
+                        pitch_multiplier = 2 ** (semitone_offset / 12)
+                    #honesly no clue how this eqation works but it dose i found i on wikipida 
+                    try:
+    
+                        if paused_state[picked_pipe]:
+                            conntrol.command("set_property", "pause", False)
+                            paused_state[picked_pipe] = False
+    
+                        velocity_scale = int(velocity) / 127
+                        scaled_volume = inst_data["volume"] * velocity_scale
+                        scaled_volume = max(scaled_volume, inst_data["volume"] * 0.3)
+    
+                        conntrol.command("set_property", "volume", scaled_volume)
+                        conntrol.command("set_property", "pitch", pitch_multiplier)
+                        conntrol.command("seek", inst_data["seek_start"], "absolute+keyframes")
+    
+                        last_played[picked_pipe] = ct
 
                 except:
                     pass
