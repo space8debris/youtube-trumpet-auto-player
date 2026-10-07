@@ -18,5 +18,7 @@ todo.
 1. More instruments
 2. Fixing the drums
 3. Fixing the batch file
-4. Fix when it sometimes skips notes
+4. Fix when it sometimes skips notes (halfway done)
+
+note(dont do a midi with to many notes at once or to fast it may cuase lag due to having 50+ windows open makes most computers lag also the most i have got to open was ~263)
 
