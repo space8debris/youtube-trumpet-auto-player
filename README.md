@@ -1,21 +1,22 @@
 # youtube-trumpet-auto-player
-A program that lets you import a MIDI and automatically plays the MIDI using the YouTube trumpet or other instruments by the same channel
+A program that lets you import a MIDI and automatically plays the MIDI using the YouTube trumpet or other instruments from the same channel
 . All credit for the videos goes to the channel https://www.youtube.com/@PlayWithKeyboard
 
 requirements
-a system running Windows 11/10
+A system running Windows 11/10(10 should work has not been tested)
 VS Code for now
 
 install.
-1. Run the .bat, then follow the instructions ( the batch file is broken right now; will work on fixing)
-Current way to install is to download the whole folder and MPV and that should work
+1. Run the .bat, then follow the instructions ( the batch file is broken right now; will work on fixing it)
+The current way to install is to download the whole folder and MPV, and that should work
 
-Usage.
-Run the GUI script in VS Code
+Usage. 
+1. Run the GUI script in VS Code
 
 todo.
-more instruments
-Fixing the drums
-Fixing the batch file
-Fix when it sometimes skips notes
+
+1. More instruments
+2. Fixing the drums
+3. Fixing the batch file
+4. Fix when it sometimes skips notes
 
