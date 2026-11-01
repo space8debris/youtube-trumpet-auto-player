@@ -16,9 +16,11 @@ Usage.
 todo.
 
 1. More instruments
-2. Fixing the drums
+2. Fixing the drums (done)
 3. Fixing the batch file
 4. Fix when it sometimes skips notes (halfway done)
+5. add note cut offs (done)
+6. let it hold notes
 
 note(dont do a midi with to many notes at once or to fast it may cuase lag due to having 50+ windows open makes most computers lag also the most i have got to open was ~263)
 
