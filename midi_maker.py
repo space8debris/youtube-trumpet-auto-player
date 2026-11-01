@@ -142,7 +142,12 @@ header_list = [f"{ch}{v}" for ch, v in sorted(most_voices.items())]
 header_string = "Max Voices: " + ", ".join(header_list) + "\n\n"
 
 def make(item):
-    token = f"{item['time']}{item['channel']}{item['voice']}{item['note']}{item['velocity']:03d}"
+    note = item['note']
+    while note > 99:
+        note -= 12
+    while note < 10:
+        note += 12
+    token = f"{item['time']}{item['channel']}{item['voice']}{note}{item['velocity']:03d}"
     if 'end' in item:
         token += f"E{item['end']}"
     return token
