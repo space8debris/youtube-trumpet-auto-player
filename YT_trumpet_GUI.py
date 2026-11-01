@@ -18,11 +18,14 @@ song_dir = home / "Documents" / "YT_trumpet" / "songs"
 logo_path = home / "Documents" / "YT_trumpet" / "Big_Logo.png"
 icon_path = home / "Documents" / "YT_trumpet" / "Big_Logo_alt.ico"
 
+
+
 midi_files = [
     file.name
     for file in midi_dir.iterdir()
     if file.suffix.lower() in (".mid", ".midi")
 ]
+
 
 layout = [
     [sg.Text("What would you like to do?")],
@@ -62,7 +65,7 @@ while True:
                 else:
                     midi_path = midi_dir / selected_file
 
-                    mid = MidiFile(midi_path)
+                    mid = MidiFile(midi_path, clip=True)
 
                     song_names = {}
                     for i, track in enumerate(mid.tracks):
@@ -114,8 +117,6 @@ while True:
 
                             break
 
-                    track_window.close()
-
                     midi_name = sg.popup_get_text('Song name?')
                     print(midi_path)
                     print(assignments)
@@ -145,6 +146,7 @@ while True:
                    
                     break
         
+        track_window.close()
         midi_window.close()
 
     if event == "Play song":
