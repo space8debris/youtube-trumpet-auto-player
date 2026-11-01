@@ -61,7 +61,9 @@ instruments = {
         "midi_note": 60,          
         "seek_start": 15.2,            
         "voices": [f"T{i}" for i in range(1, min_voices_per["T"] + 1)],
-        "voice_index": 0               
+        "voice_index": 0,       
+        "samples": {76: 0.101, 60: 15.101, 62: 30.100, 64: 45.110, 65: 60.149,
+            67: 75.149, 69: 90.149, 71: 105.160, 72: 120.167, 74: 135.178},        
     },
     "D": {
         "url": str(instruments_dir / "drum_fast.mp4"),
@@ -71,14 +73,14 @@ instruments = {
         "voices": [f"D{i}" for i in range(1, min_voices_per["D"] + 1)],    
         "voice_index": 0,
         "drum_map": {
-            35: 15.126, 36: 15.126,                          # kick
-            37: 45.126, 38: 45.126, 39: 45.126, 40: 45.126,  # snare
-            42: 30.063, 44: 30.063, 46: 30.063,              # hihat
+            35: 15.126, 36: 15.126, 24: 15.126,              # kick
+            37: 45.126, 38: 45.126, 39: 45.126, 40: 45.126, 25: 45.126, 26: 45.126, 27: 45.126, 75: 45.126, # snare
+            42: 30.063, 44: 30.063, 46: 30.063, 54: 30.063, 56: 30.063, 70: 30.063,              # hihat
             48: 90.165, 50: 90.165,                          #high tom
             45: 105.166, 47: 105.166,                        # mid tom
-            41: 120.167, 43: 120.167,                        # low tom
+            41: 120.167, 43: 120.167, 28: 120.167, 41: 120.167, 64: 120.167,                     # low tom
             49: 75.106, 52: 75.106, 55: 75.106, 57: 75.106,  # crash
-            51: 0.132, 53: 0.132, 59: 0.132,                 # ride
+            51: 0.132, 53: 0.132, 59: 0.132, 33: 0.132,                # ride
             30: 60.126,                                      # kick + hihat
             31: 135.166,                                     #snare + crash
         },      
@@ -89,7 +91,9 @@ instruments = {
         "midi_note": 64,          
         "seek_start": 120.2,            
         "voices": [f"P{i}" for i in range(1, min_voices_per["P"] + 1)],  
-        "voice_index": 0
+        "voice_index": 0,
+        "samples": {76: 0.093, 62: 30.092, 64: 45.093, 65: 60.133,
+            69: 90.133, 71: 105.134, 72: 120.134, 74: 135.134},
     },
      "G": {
             "url": str(instruments_dir / "Guitar_fast.mp4"),
@@ -97,7 +101,9 @@ instruments = {
             "midi_note": 60,          
             "seek_start": 15.0,            
             "voices": [f"G{i}" for i in range(1, min_voices_per["G"] + 1)],  
-            "voice_index": 0
+            "voice_index": 0,
+            "samples": {60: 15.120, 62: 30.120, 64: 45.120, 65: 60.113,
+            67: 75.120, 69: 90.196, 71: 0.123},
         },
     "S": {
             "url": str(instruments_dir / "stylophone_fast.mp4"),
@@ -105,7 +111,9 @@ instruments = {
             "midi_note": 60,          
             "seek_start": 15.2,            
             "voices": [f"S{i}" for i in range(1, min_voices_per["S"] + 1)],
-            "voice_index": 0               
+            "voice_index": 0  ,  
+            "samples": {76: 0.091, 60: 15.081, 62: 30.091, 64: 45.099, 65: 60.140,
+            67: 75.139, 69: 90.139, 71: 105.149, 72: 120.159, 74: 135.168},           
             },
 }
 
@@ -145,7 +153,7 @@ for i, pipe in enumerate(all_pipes):
         "--demuxer-max-bytes=500M",
         "--audio-pitch-correction=no",
         "--pause",
-        "--volume=40",
+        "--volume=100",
         video_url,
     ])
     pipes.append(pipe)
@@ -249,9 +257,10 @@ while play_index < len(play) or stop_index < len(stop_list):
                         print(f"No drum sound{midi_note}")
                         continue
                 else:
-                    semitone_offset = midi_note - inst_data["midi_note"]
-                    pitch_multiplier = 2 ** (semitone_offset / 12)
-                    seek_to = inst_data["seek_start"]                
+                    samples = inst_data.get("samples") or {inst_data["midi_note"]: inst_data["seek_start"]}
+                    base_note = min(samples, key=lambda n: abs(n - midi_note))
+                    seek_to = samples[base_note]
+                    pitch_multiplier = 2 ** ((midi_note - base_note) / 12)              
                 #honesly no clue how this eqation works but it dose i found i on wikipida 
                 try:
 
