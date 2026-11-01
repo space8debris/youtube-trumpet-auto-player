@@ -9,6 +9,8 @@ home = Path.home()
 midi_dir = home / "Documents" / "YT_trumpet" / "midis"
 song_dir = home / "Documents" / "YT_trumpet" / "songs"
 
+MAX_HOLD=2
+
 folder_path = (midi_dir)
 
 file_list = []
@@ -31,7 +33,7 @@ else:
     midi_file = folder_path.joinpath(midi)
     print(midi_file)
 
-mid = MidiFile(midi_file)
+mid = MidiFile(midi_file, clip=True)
 
 song_names = {}
 for i, track in enumerate(mid.tracks):
@@ -63,16 +65,19 @@ for channel in sorted_channels:
 #stack overflow was usefull
 print(f"\ninstruments: {instrument_map}\nProcessing timeline...")
 
+pending = {}
 
 for msg in mid: 
 
     absolute_time += msg.time
     
-    if msg.type == 'note_off':
-     continue
-    
-    if msg.type == 'note_on' and msg.velocity == 0:
-      continue
+    is_off = msg.type == 'note_off' or (msg.type == 'note_on' and msg.velocity == 0)
+    if is_off:
+        held_note = pending.pop((msg.channel, msg.note), None)
+        if held_note:
+            held_note['end'] = max(round(absolute_time, 2), held_note['time'] + 0.05)
+            held_note['held'] = False
+        continue
     
     if msg.type == 'end_of_track':
        continue
@@ -90,14 +95,13 @@ for msg in mid:
     if 'note' in msg_dict:
         active_voices = set()
         for past_item in reversed(midi_list):
-            if past_item.get('channel') == msg_dict['channel']:
-                time_gap = msg_dict['time'] - past_item['time']
-
-                if time_gap > 0.3:
-                 break
-                
-                if 'voice' in past_item:
-                 active_voices.add(past_item['voice'])
+            if past_item.get('channel') != msg_dict['channel']:
+                continue
+            time_gap = msg_dict['time'] - past_item['time']
+            if time_gap > 10:  
+                break
+            if 'voice' in past_item and ((past_item.get('held') and time_gap <= MAX_HOLD) or time_gap <= 0.3):
+                active_voices.add(past_item['voice'])
 
         chosen_voice = 1
         while chosen_voice in active_voices:
@@ -107,6 +111,14 @@ for msg in mid:
             chosen_voice = 1
 
         msg_dict['voice'] = chosen_voice
+
+
+    if 'note' in msg_dict and msg_dict['channel'] != 'D':
+        msg_dict['held'] = True
+        old = pending.get((msg.channel, msg.note))
+        if old:
+            old['held'] = False
+        pending[(msg.channel, msg.note)] = msg_dict
 
     midi_list.append(msg_dict)
 
@@ -129,8 +141,14 @@ for item in midi_list:
 header_list = [f"{ch}{v}" for ch, v in sorted(most_voices.items())]
 header_string = "Max Voices: " + ", ".join(header_list) + "\n\n"
 
+def make(item):
+    token = f"{item['time']}{item['channel']}{item['voice']}{item['note']}{item['velocity']:03d}"
+    if 'end' in item:
+        token += f"E{item['end']}"
+    return token
+
 final_string = " ".join(
-    f"{item['time']}{item['channel']}{item['voice']}{item['note']}{item['velocity']:03d}" 
+    make(item)
     for item in midi_list 
     if 'note' in item and 'channel' in item and 'voice' in item
 )
