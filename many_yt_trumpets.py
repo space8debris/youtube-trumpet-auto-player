@@ -69,8 +69,20 @@ instruments = {
         "midi_note": 60,          
         "seek_start": 15.0,            
         "voices": [f"D{i}" for i in range(1, min_voices_per["D"] + 1)],    
-        "voice_index": 0
-    },
+        "voice_index": 0,
+        "drum_map": {
+            35: 15.126, 36: 15.126,                          # kick
+            37: 45.126, 38: 45.126, 39: 45.126, 40: 45.126,  # snare
+            42: 30.063, 44: 30.063, 46: 30.063,              # hihat
+            48: 90.165, 50: 90.165,                          #high tom
+            45: 105.166, 47: 105.166,                        # mid tom
+            41: 120.167, 43: 120.167,                        # low tom
+            49: 75.106, 52: 75.106, 55: 75.106, 57: 75.106,  # crash
+            51: 0.132, 53: 0.132, 59: 0.132,                 # ride
+            30: 60.126,                                      # kick + hihat
+            31: 135.166,                                     #snare + crash
+        },      
+    },                    
     "P": {
         "url": str(instruments_dir / "piano_fast.mp4"),
         "volume": 90,
@@ -158,27 +170,33 @@ conntrols = [retry_pipe_thing(p) for p in pipes]
 last_played = {pipe: 0.0 for pipe in pipes}
 paused_state = {pipe: False for pipe in pipes}
 IDLE_PAUSE_SECONDS = 2.0
+voice_note_start = {}
+busy_until = {}
 
 #this is were setup code endss i dont like to put comments
 
-order = re.compile(r"(?P<time>\d+\.?\d*)(?P<letter>[A-Za-z])(?P<voice>\d{1,2})(?P<note>\d{2})(?P<velocity>\d{3})")
+order = re.compile(r"(?P<time>\d+\.?\d*)(?P<letter>[A-Za-z])(?P<voice>\d{1,2})(?P<note>\d{2})(?P<velocity>\d{3})(?:E(?P<end>\d+\.?\d*))?")
 
 def spliter(token):
     m = order.match(token)
     if not m:
-        raise ValueError(f"Bad entry: {token}")
-    return float(m.group("time")), m.group("letter"), m.group("voice"), m.group("note"), m.group("velocity")
+        raise ValueError(f"error: {token}")
+    end = float(m.group("end")) if m.group("end") else None
+    return float(m.group("time")), m.group("letter"), m.group("voice"), m.group("note"), m.group("velocity"), end
 
 split = song_data.split()
 play = [spliter(t) for t in split]
 play.sort(key=lambda e: e[0])
 print(play)
 
-thing = defaultdict(list)
-for ev in play:
- rounded_event_time = round(ev[0], 2)
- thing[rounded_event_time].append(ev)
 
+
+stop_list = sorted(
+    (end, f"{letter}{int(voice)}", t)
+    for (t, letter, voice, note, velocity, end) in play
+    if end is not None and letter != "D"
+)
+stop_index = 0
 
 for conntrol in conntrols:
     try:
@@ -187,63 +205,77 @@ for conntrol in conntrols:
         pass
 
 
-ct = 0.0
-end_time = max(thing.keys()) if thing else 0
-
+play_index = 0
 start_time = time.perf_counter()
 
-active_voices = {}
-
-while ct <= end_time:
+while play_index < len(play) or stop_index < len(stop_list):
     ct = time.perf_counter() - start_time
 
-    past_time = [t for t in thing.keys() if t <= ct]
-    
-     if past_time:
-         for timestamp in past_time:
-            for info in thing.pop(timestamp):     
-        
+    due = []
+    while play_index < len(play) and play[play_index][0] <= ct:
+        due.append(play[play_index])
+        play_index += 1
+
+
+    while stop_index < len(stop_list) and stop_list[stop_index][0] <= ct:
+        stop_time, pipe, note_start = stop_list[stop_index]
+        stop_index += 1
+        if voice_note_start.get(pipe) == note_start and not paused_state[pipe]:
+            try:
+                conntrols[wfl[pipe]].command("set_property", "pause", True)
+                paused_state[pipe] = True
+            except Exception as e:
+                print(e)
             
-                event_time, letter, voice, note, velocity = info
-                print(f"Time {event_time}: play {letter}{voice} note {note} velocity {velocity} ")
-    
-                if letter in instruments:
-                    inst_data = instruments[letter]
-                    
-                    picked_pipe = f"{letter}{int(voice)}"
-                    
-                    conntrol_list_i_am_running_out_of_names = wfl[picked_pipe]
-                    conntrol = conntrols[conntrol_list_i_am_running_out_of_names]
-                    
-                    midi_note = int(note)
-    
-                    if letter == "D":
-                        pitch_multiplier = 1.0   # no pitch shift for drums
-                    else:
-                        semitone_offset = midi_note - inst_data["midi_note"]
-                        pitch_multiplier = 2 ** (semitone_offset / 12)
-                    #honesly no clue how this eqation works but it dose i found i on wikipida 
-                    try:
-    
-                        if paused_state[picked_pipe]:
-                            conntrol.command("set_property", "pause", False)
-                            paused_state[picked_pipe] = False
-    
-                        velocity_scale = int(velocity) / 127
-                        scaled_volume = inst_data["volume"] * velocity_scale
-                        scaled_volume = max(scaled_volume, inst_data["volume"] * 0.3)
-    
-                        conntrol.command("set_property", "volume", scaled_volume)
-                        conntrol.command("set_property", "pitch", pitch_multiplier)
-                        conntrol.command("seek", inst_data["seek_start"], "absolute+keyframes")
-    
-                        last_played[picked_pipe] = ct
+    if due:
+        for info in due:
+            event_time, letter, voice, note, velocity, end = info
+            print(f"Time {event_time}: play {letter}{voice} note {note} velocity {velocity} ")
+
+            if letter in instruments:
+                inst_data = instruments[letter]
+                
+                picked_pipe = f"{letter}{int(voice)}"
+                
+                conntrol_list_i_am_running_out_of_names = wfl[picked_pipe]
+                conntrol = conntrols[conntrol_list_i_am_running_out_of_names]
+                
+                midi_note = int(note)
+
+                if letter == "D":
+                    pitch_multiplier = 1.0 
+                    seek_to = inst_data["drum_map"].get(midi_note)
+                    if seek_to is None:                              
+                        print(f"No drum sound{midi_note}")
+                        continue
+                else:
+                    semitone_offset = midi_note - inst_data["midi_note"]
+                    pitch_multiplier = 2 ** (semitone_offset / 12)
+                    seek_to = inst_data["seek_start"]                
+                #honesly no clue how this eqation works but it dose i found i on wikipida 
+                try:
+
+                    if paused_state[picked_pipe]:
+                        conntrol.command("set_property", "pause", False)
+                        paused_state[picked_pipe] = False
+
+                    velocity_scale = int(velocity) / 127
+                    scaled_volume = inst_data["volume"] * velocity_scale
+                    scaled_volume = max(scaled_volume, inst_data["volume"] * 0.3)
+
+                    conntrol.command("set_property", "volume", scaled_volume)
+                    conntrol.command("set_property", "pitch", pitch_multiplier)
+                    conntrol.command("seek", seek_to, "absolute+exact")   
+                    last_played[picked_pipe] = ct
+                    voice_note_start[picked_pipe] = event_time
+                    busy_until[picked_pipe] = end
 
                 except:
                     pass
 
     for pipe in pipes:
-        if not paused_state[pipe] and (ct - last_played[pipe]) > IDLE_PAUSE_SECONDS:
+        busy = busy_until.get(pipe) is not None and ct < busy_until[pipe]
+        if not paused_state[pipe] and not busy and (ct - last_played[pipe]) > IDLE_PAUSE_SECONDS:
             idx = wfl[pipe]
             try:
                 conntrols[idx].command("set_property", "pause", True)
