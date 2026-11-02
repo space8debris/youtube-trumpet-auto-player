@@ -1,177 +1,192 @@
+import PySimpleGUI as sg
 from pathlib import Path
+import subprocess
+import sys
 from mido import MidiFile
-import sys   
 
-print("ARGV:", sys.argv)
+instruments = [
+    "Trumpet",
+    "Piano",
+    "Synth",
+    "Guitar",
+    "Drums"
+]
 
 home = Path.home()
-
 midi_dir = home / "Documents" / "YT_trumpet" / "midis"
 song_dir = home / "Documents" / "YT_trumpet" / "songs"
+logo_path = home / "Documents" / "YT_trumpet" / "Big_Logo.png"
+icon_path = home / "Documents" / "YT_trumpet" / "Big_Logo_alt.ico"
 
-MAX_HOLD=2
 
-folder_path = (midi_dir)
 
-file_list = []
-midi_list = []
-absolute_time = 0.0
+midi_files = [
+    file.name
+    for file in midi_dir.iterdir()
+    if file.suffix.lower() in (".mid", ".midi")
+]
 
-if len(sys.argv) > 1:
-    midi_file = Path(sys.argv[1])
-    print(f"Received file from prent: {midi_file}")
-else:
-    for item in folder_path.iterdir():
-        if item.is_file():
-            file_list.append(item.name)
 
-    print('\n'.join(f"{i}. {file}" for i, file in enumerate(file_list, 1)))
+layout = [
+    [sg.Text("What would you like to do?")],
+    [sg.Button('Convert MIDI')],
+    [sg.Button('Play song')],
+    [sg.VPush()],
+    [sg.Push(), sg.Image(filename=logo_path)]
+]
 
-    midi_num = int(input("what file:"))
-    midi = file_list[midi_num-1]
-    print(midi)
-    midi_file = folder_path.joinpath(midi)
-    print(midi_file)
+window = sg.Window('Youtube trumpet autoplayer', layout, size=(500, 300), icon=icon_path)
 
-mid = MidiFile(midi_file, clip=True)
+while True:
+    event, values = window.read()
+    if event == sg.WINDOW_CLOSED or event == 'Quit':
+        break
+    if event == "Convert MIDI":
+        midi_layout = [
+            [sg.Text("Select MIDI")],
+            [sg.Combo(midi_files, key="-MIDI-", readonly=True)],
+            [sg.Button('Convert')],
+            [sg.VPush()],
+            [sg.Push(), sg.Image(filename=logo_path)]
+        ]
 
-song_names = {}
-for i, track in enumerate(mid.tracks):
-    song_names[i] = f"Track {i} (Unnamed)"
-    for track_msg in track:
-        if track_msg.type in ['track_name', 'instrument_name']:
-          song_names[i] = track_msg.name
-          break 
+        midi_window = sg.Window('MIDI converter', midi_layout, size=(350, 250), icon=icon_path)
 
-channel_track_info = {}
-for i, track in enumerate(mid.tracks):
-    for track_msg in track:
-        if track_msg.type == 'note_on' and track_msg.velocity > 0 and hasattr(track_msg, 'channel'):
-         channel_track_info[track_msg.channel] = song_names[i]
+        while True:
+            midi_event, midi_values = midi_window.read()
+            if midi_event == sg.WINDOW_CLOSED or midi_event == 'Quit':
+                    break
+            if midi_event == "Convert":
+                selected_file = midi_values["-MIDI-"]
 
-sorted_channels = sorted(list(channel_track_info.keys()))
+                if not selected_file:
+                    sg.popup("Please select a MIDI file first.")
 
-for channel in sorted_channels:
-    track_text = channel_track_info[channel]
-    print(f"Channel {channel:2d} -> {track_text}")
+                else:
+                    midi_path = midi_dir / selected_file
 
-instrument_map = {}
-print("\n(T, D, P, G, S) hit Enter to skip:")
-for channel in sorted_channels:
-    user_choice = input(f"Channel {channel} ({channel_track_info[channel]}) -> (T/D/P): ").strip().upper()
-    
-    if user_choice in ['T', 'D', 'P', 'G', 'S']:
-       instrument_map[channel] = user_choice
-#stack overflow was usefull
-print(f"\ninstruments: {instrument_map}\nProcessing timeline...")
+                    mid = MidiFile(midi_path, clip=True)
 
-pending = {}
+                    song_names = {}
+                    for i, track in enumerate(mid.tracks):
+                        song_names[i] = f"Track {i} (Unnamed)"
+                        for track_msg in track:
+                            if track_msg.type in ['track_name', 'instrument_name']:
+                                song_names[i] = track_msg.name
+                                break
 
-for msg in mid: 
+                    channel_track_info = {}
+                    for i, track in enumerate(mid.tracks):
+                        for track_msg in track:
+                            if track_msg.type == 'note_on' and track_msg.velocity > 0 and hasattr(track_msg, 'channel'):
+                                channel_track_info[track_msg.channel] = song_names[i]
 
-    absolute_time += msg.time
-    
-    is_off = msg.type == 'note_off' or (msg.type == 'note_on' and msg.velocity == 0)
-    if is_off:
-        held_note = pending.pop((msg.channel, msg.note), None)
-        if held_note:
-            held_note['end'] = max(round(absolute_time, 2), held_note['time'] + 0.05)
-            held_note['held'] = False
-        continue
-    
-    if msg.type == 'end_of_track':
-       continue
+                    sorted_channels = sorted(list(channel_track_info.keys()))
+
+                    track_layout = [
+                        [sg.Text("Assign instruments")],
+                    ]
+
+                    for ch in sorted_channels:
+                        track_layout.append([
+                            sg.Text(f"Channel {ch} ({channel_track_info[ch]})"),
+                            sg.Combo(instruments, key=f"-CH-{ch}-", readonly=True)
+                        ])
+
+                    track_layout.append([
+                        sg.Button("Continue")
+                    ])
+
+                    track_layout.append ([
+                        [sg.VPush()],
+                        [sg.Push(), sg.Image(filename=logo_path)]
+                    ])
+
+                    track_window = sg.Window("Insturment assignment", track_layout, icon=icon_path)
+
+                    while True:
+                        track_event, track_values = track_window.read()
+                        if track_event == sg.WINDOW_CLOSED or midi_event == 'Quit':
+                            break
+
+                        if track_event == "Continue":
+                            assignments = []
+
+                            for ch in sorted_channels:
+                                assignments.append(track_values[f"-CH-{ch}-"])
+
+                            break
+
+                    midi_name = sg.popup_get_text('Song name?')
+                    print(midi_path)
+                    print(assignments)
+                    print(midi_name)
+                    name_to_letter = {"Trumpet": "T", "Drums": "D", "Piano": "P", "Guitar": "G", "Synth": "S"}
+
+                    answer_lines = []
+                    for choice in assignments:
+                        letter = name_to_letter.get(choice, "")  
+                        answer_lines.append(letter)
+
+                    answer_lines.append(midi_name)  
+
+                    input_text = "\n".join(answer_lines) + "\n"
+
+                    result = subprocess.run(
+                        [sys.executable, "midi_maker.py", str(midi_path)],
+                        input=input_text,
+                        text=True,
+                        cwd=home / "Documents" / "YT_trumpet",
+                        capture_output=True
+                    )
+
+                    print("STDOUT:", result.stdout)
+                    print("STDERR:", result.stderr)
+
+                   
+                    break
         
-    msg_dict = msg.dict()
+        track_window.close()
+        midi_window.close()
 
-    msg_dict['time'] = round(absolute_time, 2)
+    if event == "Play song":
+        song_files = [
+        file.name
+        for file in song_dir.iterdir()
+        if file.suffix.lower() == ".txt"
+         ]
+        song_layout = [
+            [sg.Text("Select song")],
+            [sg.Combo(song_files, key="-SONG-", readonly=True)],
+            [sg.Button('Play')],
+            [sg.VPush()],
+            [sg.Push(), sg.Image(filename=logo_path)]
+          ]
 
-    if 'channel' in msg_dict:
-        if msg_dict['channel'] in instrument_map:
-            msg_dict['channel'] = instrument_map[msg_dict['channel']]
-        else:
-          continue
+        
 
-    if 'note' in msg_dict:
-        active_voices = set()
-        for past_item in reversed(midi_list):
-            if past_item.get('channel') != msg_dict['channel']:
-                continue
-            time_gap = msg_dict['time'] - past_item['time']
-            if time_gap > 10:  
+        song_window = sg.Window('Song player', song_layout, size=(350, 250), icon=icon_path)
+
+        while True:
+            song_event, song_values = song_window.read()
+            if song_event == sg.WINDOW_CLOSED or song_event == 'Quit':
                 break
-            if 'voice' in past_item and ((past_item.get('held') and time_gap <= MAX_HOLD) or time_gap <= 0.3):
-                active_voices.add(past_item['voice'])
+            if song_event == "Play":
+                selected_file = song_values["-SONG-"]
 
-        chosen_voice = 1
-        while chosen_voice in active_voices:
-            chosen_voice += 1
+                if not selected_file:
+                    sg.popup("Please select a song first.")
 
-        if chosen_voice > 180:
-            chosen_voice = 1
+                else:
+                    song_path = song_dir / selected_file
 
-        msg_dict['voice'] = chosen_voice
+                    print(song_path)
+                    subprocess.Popen(
+                    [sys.executable, "many_yt_trumpets.py", str(song_path)],
+                    cwd=home / "Documents" / "YT_trumpet"
+                    )
+                    break
 
+        song_window.close()
 
-    if 'note' in msg_dict and msg_dict['channel'] != 'D':
-        msg_dict['held'] = True
-        old = pending.get((msg.channel, msg.note))
-        if old:
-            old['held'] = False
-        pending[(msg.channel, msg.note)] = msg_dict
-
-    midi_list.append(msg_dict)
-
-
-for item in midi_list:
-    if 'note' in item and 'channel' in item and 'voice' in item:
-        print(f"{item['time']}{item['channel']}{item['voice']}{item['note']}{item['velocity']:03d}", end=" ")
-print()
-
-
-most_voices = {}
-for item in midi_list:
-    if 'channel' in item and 'voice' in item:
-        channel = item['channel']
-        voice = item['voice']
-
-        if channel not in most_voices or voice > most_voices[channel]:
-         most_voices[channel] = voice
-
-header_list = [f"{ch}{v}" for ch, v in sorted(most_voices.items())]
-header_string = "Max Voices: " + ", ".join(header_list) + "\n\n"
-
-def make(item):
-    note = item['note']
-    while note > 99:
-        note -= 12
-    while note < 10:
-        note += 12
-    token = f"{item['time']}{item['channel']}{item['voice']}{note}{item['velocity']:03d}"
-    if 'end' in item:
-        token += f"E{item['end']}"
-    return token
-
-final_string = " ".join(
-    make(item)
-    for item in midi_list 
-    if 'note' in item and 'channel' in item and 'voice' in item
-)
-
-final_song = header_string + final_string
-
-
-export_folder = Path(song_dir)
-
-songname = input("name ")+ ".txt"
-
-output_file = export_folder.joinpath(songname)
-
-
-file_path = export_folder.joinpath(songname)
-
-
-output_file.write_text(final_song)
-
-print(f"\n\n->saved to: {output_file.name}")
-#hii
+window.close()
