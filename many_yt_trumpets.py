@@ -178,7 +178,7 @@ def retry_pipe_thing(pipe_name, tries=30, delay=0.5):
 conntrols = [retry_pipe_thing(p) for p in pipes]
 
 last_played = {pipe: 0.0 for pipe in pipes}
-paused_state = {pipe: False for pipe in pipes}
+paused_state = {pipe: True for pipe in pipes}
 IDLE_PAUSE_SECONDS = 2.0
 voice_note_start = {}
 busy_until = {}
@@ -207,12 +207,6 @@ stop_list = sorted(
     if end is not None and letter != "D"
 )
 stop_index = 0
-
-for conntrol in conntrols:
-    try:
-        conntrol.command("set_property", "pause", False)
-    except Exception:
-        pass
 
 
 play_index = 0
